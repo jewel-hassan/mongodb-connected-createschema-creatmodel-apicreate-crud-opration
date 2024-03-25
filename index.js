@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
-var cors = require("cors");
+const cors = require("cors");
 const PORT = process.env.PORT;
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -115,7 +115,16 @@ app.post("/products", async (req, res) => {
 
     app.get("/products", async(req,res)=>{
       try {
-       const products = await product.find()     
+        const price = req.query.price
+        let products;
+       
+       if(price){
+        products = await product.find({price:{$gte:price}}) 
+       }else{
+        products = await product.find() 
+       }
+
+
       if(products){
         res.status(201).send({
           success:true,
@@ -141,12 +150,12 @@ app.post("/products", async (req, res) => {
       try {
         const id = req.params.id
 
-      // COMPLETE DOCUMENT HAVE TO SHOW
+      // COMPLETE DOCUMENT ONE PRODUCT HAVE TO SHOW
 
        const products = await product.findOne({_id: id})
 
-
-      // SPECIFIC DATA SHOW (EXAMPLE: SHOW TITLE DATA & PRICE DATA NOT SHOW ID)
+      
+    // SPECIFIC DATA SHOW (EXAMPLE: SHOW TITLE DATA & PRICE DATA NOT SHOW ID)
 
       //  const products = await product.findOne({_id: id}).select({
       //   title:1,
@@ -154,11 +163,12 @@ app.post("/products", async (req, res) => {
       //   _id:0
       //  })
 
+
       if(products){
         res.status(202).send({
           success:true,
           message:"return single data",
-          data:products
+          data:products,
 
         })
       }else{
