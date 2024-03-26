@@ -68,6 +68,8 @@ app.use(cors());
 
 const product = mongoose.model("products", productsSchema);
 
+
+
 // PRODUCTS CREATE POST ROUTE
 
 app.post("/products", async (req, res) => {
@@ -111,7 +113,11 @@ app.post("/products", async (req, res) => {
   }
 });
 
-    // PROCUCTS TO GET FORM MONGODB DATABASE
+    
+
+
+
+// PROCUCTS TO GET FORM MONGODB DATABASE
 
     app.get("/products", async(req,res)=>{
       try {
@@ -144,6 +150,10 @@ app.post("/products", async (req, res) => {
     })
 
 
+    
+    
+    
+    
     // SEARCH ID BY SPECIFIC DATA FORM MONGODB DATABASE STORE
 
     app.get("/products/:id", async(req,res)=>{
@@ -184,17 +194,26 @@ app.post("/products", async (req, res) => {
       }
     })
 
+
+
+
     // PRODUCT DELETE FORM MONGODB
 
   app.delete("/products/:id", async(req,res)=>{
     try {
       const id = req.params.id
-      const productInfo = await product.deleteOne({_id: id})
+      // SINGLE DATA DELETE NO INFORMATIO SHOW
+      const deleteData = await product.deleteOne({_id: id})
+
+      // SINGLE DATA DELETE WITH INFORMATION IN MONGODB
+
+      // const productInfo =await product.findByIdAndDelete({_id:id})
+
       if(product){
         res.status(200).send({
           success:true,
           message:"product was deleted",
-          data:productInfo,
+          data:deleteData,
         })
       }else{
         res.status(404).send({
@@ -203,9 +222,68 @@ app.post("/products", async (req, res) => {
         })
       }
     } catch (error) {
-      console.log(error.message)
+      res.status(500).send({
+        message: error.message,
+      });
     }
   })
+
+
+
+
+
+  // SINGLE UPDATE DATA FORM MONGODB
+
+  app.put("/products/:id", async(req,res)=>{
+    try {
+      const id = req.params.id
+      // SINGLE UPDATE DATA NO INFORMATION SHOW
+    
+    // const updateData = await product.updateOne({
+    //   _id:id
+    // },{
+    //   $set:{
+    //     price:125,
+    //   },
+    // })
+
+
+    // SINGLE UPDATE DATA WITH INFORMATION SHOW
+
+    const updateData = await product.findByIdAndUpdate({
+      _id:id
+    },{
+      $set:{
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      },
+    },{
+      new:true,
+    })
+
+
+    if(updateData){
+      res.status(205).send({
+        success:true,
+        message:"product was updated",
+        data:updateData,
+      })
+
+    }else{
+      res.status(403).send({
+        success:false,
+        message:"product was not updated"
+      })
+    }
+    } catch (error) {
+      res.status(500).send({
+        message: error.message,
+      });
+    }
+  })
+
+
 
 
 // HOME ROUTE
