@@ -68,7 +68,7 @@ app.use(cors());
 
 const product = mongoose.model("products", productsSchema);
 
-// PRODUCTS POST ROUTE
+// PRODUCTS CREATE POST ROUTE
 
 app.post("/products", async (req, res) => {
   try {
@@ -105,7 +105,7 @@ app.post("/products", async (req, res) => {
 
   res.status(201).send(productData);
   } catch (error) {
-    res.status(500).send({
+    res.status(401).send({
       message: error.message,
     });
   }
@@ -183,6 +183,29 @@ app.post("/products", async (req, res) => {
         });
       }
     })
+
+    // PRODUCT DELETE FORM MONGODB
+
+  app.delete("/products/:id", async(req,res)=>{
+    try {
+      const id = req.params.id
+      const productInfo = await product.deleteOne({_id: id})
+      if(product){
+        res.status(200).send({
+          success:true,
+          message:"product was deleted",
+          data:productInfo,
+        })
+      }else{
+        res.status(404).send({
+          success:false,
+          message:"product was not delete"
+        })
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
+  })
 
 
 // HOME ROUTE
