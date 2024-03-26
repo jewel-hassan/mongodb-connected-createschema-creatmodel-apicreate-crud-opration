@@ -41,11 +41,25 @@ const connectedDb = async () => {
 const productsSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required:[true,"product title is required"],
+    minlength:[4,"product minimum 4 characters"],
+    maxlength:[30,"product maximum 30 characters"],
+    lowercase:true,
+    trim:true,
+    enum:{
+      values:["i-phone","sumsang"],
+      message:"{value} is not supported"
+    }
+  },email: {
+    type: String,
+    unique:[true, "user is exist"],
+    required:true,
   },
   price: {
     type: Number,
-    required: true,
+    required:[true,"price is required"],
+    min:[200,"minimum price 200 tk"],
+    max:[2500,"maxium price 2500 tk"]
   },
   description: {
     type: String,
@@ -81,6 +95,7 @@ app.post("/products", async (req, res) => {
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,
+      email:req.body.email,
     });
     const productData = await newProduct.save();
 
@@ -237,7 +252,8 @@ app.post("/products", async (req, res) => {
   app.put("/products/:id", async(req,res)=>{
     try {
       const id = req.params.id
-      // SINGLE UPDATE DATA NO INFORMATION SHOW
+
+    // SINGLE UPDATE DATA NO INFORMATION SHOW FORM MONGDB
     
     // const updateData = await product.updateOne({
     //   _id:id
@@ -248,7 +264,7 @@ app.post("/products", async (req, res) => {
     // })
 
 
-    // SINGLE UPDATE DATA WITH INFORMATION SHOW
+    // SINGLE UPDATE DATA WITH INFORMATION SHOW FORM MONGDB
 
     const updateData = await product.findByIdAndUpdate({
       _id:id
@@ -257,6 +273,7 @@ app.post("/products", async (req, res) => {
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,
+      email:req.body.email
       },
     },{
       new:true,
